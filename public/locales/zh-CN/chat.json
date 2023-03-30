@@ -1,0 +1,9 @@
+{
+    "ClearConversation" : "清除所有对话",
+    "Logout": "登出",
+    "NewChat": "新对话",
+    "UploadFile": "上传文件",
+    "FileSelected": "选中的文件",
+    "WorkSpace": "的工作区",
+    "GenerateHint": "正在生成答案"
+}

@@ -1,0 +1,100 @@
+@font-face {
+    font-family: "sf-display-regular";
+    src: url("/fonts/SF-Pro-Display-Regular.otf") format("opentype");
+    }
+    @font-face {
+      font-family: "sf-display-ultralight";
+      src: url("/fonts/SF-Pro-Display-Ultralight.otf") format("opentype");
+      }
+
+      @font-face {
+        font-family: "sf-display-heavy";
+        src: url("/fonts/SF-Pro-Display-Heavy.otf") format("opentype");
+      }
+      @font-face {
+        font-family: "sf-display-medium";
+        src: url("/fonts/SF-Pro-Display-Medium.otf") format("opentype");
+      }
+      @font-face {
+        font-family: "sf-display-bold";
+        src: url("/fonts/SF-Pro-Display-Bold.otf") format("opentype");
+      }
+      @font-face {
+        font-family: "sf-display-thin";
+        src: url("/fonts/SF-Pro-Display-Thin.otf") format("opentype");
+      }
+      @font-face {
+        font-family: "sf-display-light";
+        src: url("/fonts/SF-Pro-Display-Light.otf") format("opentype");
+      }
+    @font-face {
+      font-family: "pingfang-regular";
+      src: url("/fonts/PingFangRegular.ttf") format("truetype");
+  
+    }
+    @font-face {
+      font-family: "pingfang-medium";
+      src: url("/fonts/PingFangMedium.ttf") format("truetype");
+  
+    }
+    @font-face {
+      font-family: "pingfang-bold";
+      src: url("/fonts/PingFangBold.ttf") format("truetype");
+      }
+    @font-face {
+      font-family: "pingfang-light";
+      src: url("/fonts/PingFangLight.ttf") format("truetype");
+  
+    }
+    @font-face {
+      font-family: "pingfang-ultralight";
+      src: url("/fonts/PingFangExtraLight.ttf") format("truetype");
+  
+    }
+    @font-face {
+      font-family: "pingfang-heavy";
+      src: url("/fonts/PingFangHeavy.ttf") format("truetype");
+  
+    }
+    @font-face{
+      font-family: "SegMDL2";
+      src: url("/fonts/SegMDL2.ttf") format("truetype");
+
+    }
+    .enRegular{
+        font-family: "sf-display-regular";
+      }
+      .cnRegular{
+        font-family: "pingfang-regular";
+      
+      }
+      .enBold{
+        font-family: "sf-display-bold";
+      }
+      .cnBold{
+        font-family: "pingfang-bold";
+      }
+      .enMedium{
+        font-family: "sf-display-medium";
+      }
+      .cnMedium{
+        font-family: "pingfang-medium";
+      }
+      .enLight{
+        font-family: "sf-display-light";
+      }
+      .cnLight{
+        font-family: "pingfang-light";
+      }
+      .enHeavy{
+        font-family: "sf-display-heavy";
+      }
+      .cnHeavy{
+        font-family: "pingfang-heavy";
+      }
+      
+
+      .sfUltralight{
+        font-family: "sf-display-ultralight";
+
+      }

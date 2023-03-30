@@ -1,0 +1,11 @@
+{
+    "Title": "ChatPDF",
+    "Chats":"问答",
+    "ChatsLink":"/zh-CN/Chat",
+    "ChatsFileLink" : "/zh-CN/ChatwithFile",
+    "ChatsDesc":"基于ChatGPT的问答系统，无需提供资料，即可快速获得答案",
+    "AskPdf":"文档问答",
+    "AskPdfDesc":"基于ChatGPT的文档问答系统，选择相关的文档，提出问题并获得答案",
+    "ReportPDF":"文档报告",
+    "ReportPDFDesc":"基于ChatGPT的文档报告系统，选择相关的文档，提出主题并获得相关的简报"
+}

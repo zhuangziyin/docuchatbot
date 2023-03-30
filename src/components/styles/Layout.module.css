@@ -1,0 +1,47 @@
+.randomBack {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 4rem 0;
+  }
+  
+  .randomBack::before {
+    background: var(--secondary-glow);
+    border-radius: 50%;
+    width: 480px;
+    height: 360px;
+    margin-left: -400px;
+  }
+  
+  .randomBack::after {
+    background: var(--primary-glow);
+    width: 400px;
+    height: 300px;
+    z-index: -1;
+  }
+  
+  .randomBack::before{
+    content: '';
+    left: 50%;
+    position: absolute;
+    filter: blur(45px);
+    transform: translateZ(0);
+  }
+  
+  .randomBack::after {
+    content: '';
+    left: 30%;
+    position: absolute;
+    filter: blur(45px);
+    transform: translateZ(0);
+  }
+  .main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6rem;
+    min-height: 100vh;
+  }
+  

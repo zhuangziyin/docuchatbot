@@ -1,0 +1,33 @@
+.loginBox{
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 #0000,0 0 #0000,0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);
+    background-color: white;   
+    max-width:28rem;
+    width:100%;
+    position: absolute;
+}
+
+.loginLblBox{
+    padding: 2rem 4rem 1.5rem 4rem;
+
+    
+    border-bottom-width: 1px;
+    border-color: rgb(229 231 235);
+}
+.loginContentBox{
+    padding: 1.5rem 4rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(249 250 251);   
+    border-radius: 0 0 1rem 1rem;
+}
+
+.lineTopMargin{
+    margin-top: .75rem;
+}
+.clearInput{
+    border-style: solid;
+
+
+}

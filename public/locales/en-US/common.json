@@ -1,0 +1,13 @@
+{
+    "Title": "ChatPDF",
+    "Chats":"Chats",
+    "ChatsLink":"/Chat",
+    "ChatsFileLink" : "/ChatwithFile",
+    "ChatsDesc": "A question-answering system based on ChatGPT.",
+
+    "AskPdf":"Doc Chats",
+    "AskPdfDesc": "A document question-answering system based on relevant docs selected.",
+
+    "ReportPDF":"Doc Reports",    
+    "ReportPDFDesc": "Propose GPT a topic and receive a related report based on docs selected."
+}

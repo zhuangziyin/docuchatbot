@@ -1,0 +1,49 @@
+
+  .langLblCard{
+    cursor: pointer;
+    margin: 0;
+    padding: 1rem;
+    background-color: rgba(var(--callout-rgb), 0.5);
+    border: 1px solid rgba(var(--callout-border-rgb), 0.3);
+    width:5rem;
+    display: flex;
+    justify-content: center;
+  }
+  .langLblLeft{
+    border-right: none;
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+    
+  }
+  .langLblRight{
+    border-left: none;
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  }
+  .active {
+    background-color: rgba(var(--callout-rgb), 1);
+    
+  }
+  
+
+
+  .floatRight{
+    position: fixed;
+    right: 10rem;
+    top: 10rem;
+    left: auto !important;
+  }
+
+  
+  .floatLeft{
+    position: fixed;
+    left: 10rem;
+    top: 10rem;
+    right: auto !important;
+  }
+
+  .narrow{
+    right: 3rem;
+    top: 3rem;
+    left: 3rem;
+  }
+  
+
