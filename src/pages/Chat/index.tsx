@@ -46,8 +46,13 @@ const response = await fetch("/api/chat/completion", {
   body:JSON.stringify(curMsgs),
   method: 'POST'
 });
-const msg = await response.json();
+if(response.ok){
+  const msg = await response.json();
 messageBoxRef?.current?.addMessage(msg, false);  
+}
+else{
+  messageBoxRef?.current?.setFailed();
+}
 
 }
 const { socket } = useSocket();

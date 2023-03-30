@@ -4,6 +4,9 @@ import { useEffect } from 'react';
 import Image from 'next/image';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import WaitingLbl from './WaitingLbl';
+import { localeToFontCls } from '@/utils/fontCls';
+import { useTranslation } from 'next-i18next';
+import { BsRobot } from 'react-icons/bs';
 export interface ChatMessage{
     role: string;
     content: string;
@@ -18,6 +21,7 @@ export interface MessageBoxRef {
     addMessage: (msg: ChatMessage, isFinished: boolean) => void;
     getMessage:() => ChatMessage[]
     showWaiting: (show: boolean) => void;
+    setFailed: () => void;
 }
 interface Props {
     condition: boolean;
@@ -37,9 +41,11 @@ const ChatBox = React.forwardRef<MessageBoxRef, MessageBoxProps>((props, ref) =>
     let tmp : JSX.Element[] = [];
     const [renderedMessages, setRenderedMessages] = useState(tmp);
     const [duringQuery, setDuringQuery] = useState(false);
+    const [isError, setIsError] = useState(false);
     const [messages, setMessages]  = useState(props.messages);
     const divRef = useRef<HTMLDivElement>(null);
     let previousHeight = 0;
+    const {t} = useTranslation("chat");
     function scrollToBottom(){
         if(divRef.current == null) {
             return;
@@ -74,6 +80,10 @@ const ChatBox = React.forwardRef<MessageBoxRef, MessageBoxProps>((props, ref) =>
         },
         showWaiting: (flag: boolean) => {
           setDuringQuery(flag);
+        },
+        setFailed: ()=>{
+          setDuringQuery(false);
+          setIsError(true);
         }
       }));
       return (
@@ -88,6 +98,11 @@ const ChatBox = React.forwardRef<MessageBoxRef, MessageBoxProps>((props, ref) =>
                 <div className='absolute inset-0 flex flex-col'>
                             {renderedMessages}    
                             {duringQuery && <WaitingLbl localeStr={props.localeStr}/>}
+                            {isError && <div className={"bg-red-200/30  border border-red-500 shadow-lg mb-2 text-red-500 px-4 py-2 text-sm rounded-md mx-auto flex items-center justify-center  " + localeToFontCls(props.localeStr, "heavy")}>
+                            <div className='flex align-center justify-items-end mr-2'>
+                        <BsRobot size={40} />
+                    </div><span>{t("ChatErrHint")}</span>
+                              </div>}
                 </div>
                         
                 </CSSTransition>
