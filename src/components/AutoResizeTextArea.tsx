@@ -30,7 +30,7 @@ const AutoResizeTextArea = React.forwardRef<AutosizeRef, AutoResizeTextAreaProps
 
   }));
   const handleKeyDown = (event: KeyboardEvent) =>{
-    if (event.key === 'Enter' && event.shiftKey) {
+    if (event.key === 'Enter' && !event.shiftKey) {
         props.SendMessage(textareaRef.current?.value!);
         if (textareaRef.current) {
             textareaRef.current.value = "";
