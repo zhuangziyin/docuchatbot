@@ -10,7 +10,7 @@ import FileSidebarSelectedItem from './FileSidebarSelectedItem'
 import { useEffect, useState } from 'react'
 import { SideBarCls } from './SidebarBasicCls'
 import { signOut } from 'next-auth/react'
-
+import FileUploader from './FileUploader'
 function FileSidebar(props:{localeStr: string, files:string[], userName: string}) {
     
     const [selectedFiles, setSelectedFiles] = useState<{[id:string]: boolean}>({});
@@ -59,10 +59,7 @@ function FileSidebar(props:{localeStr: string, files:string[], userName: string}
                 
             </div>
             <div className='relative border-t-slate-200 border-solid border-t'>
-                <div className={SideBarCls.SideBarBtm}>
-                    <AiOutlineCloudUpload size={SideBarCls.IconSize} className="mr-3" />
-                    <span>{t("UploadFile")}</span>
-                </div>
+                <FileUploader />
                 <div className={SideBarCls.SideBarBtm}>
                 <RiDeleteBin6Line size={SideBarCls.IconSize} className="mr-3"/>
                 <span>{t("ClearConversation")}</span>

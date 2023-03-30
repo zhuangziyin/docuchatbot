@@ -1,10 +1,10 @@
-import React, { useLayoutEffect, useRef, useState, KeyboardEvent, useImperativeHandle } from 'react';
-
+import React, { useLayoutEffect, useRef, useState, KeyboardEvent, useImperativeHandle, RefObject } from 'react';
+import { Ref } from 'react';
 interface AutoResizeTextAreaProps {
   initHeight: number;
   className: string;
   children: never[];
-  SendMessage: (str: string) => void
+  SendMessage: (str: string) => void;
 }
 export interface AutosizeRef{
     content: ()=>string;
@@ -30,7 +30,7 @@ const AutoResizeTextArea = React.forwardRef<AutosizeRef, AutoResizeTextAreaProps
 
   }));
   const handleKeyDown = (event: KeyboardEvent) =>{
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === 'Enter' && event.shiftKey) {
         props.SendMessage(textareaRef.current?.value!);
         if (textareaRef.current) {
             textareaRef.current.value = "";
@@ -45,6 +45,7 @@ const AutoResizeTextArea = React.forwardRef<AutosizeRef, AutoResizeTextAreaProps
               setHeight(props.initHeight);
             } else if (scrollHeight) {
               setHeight(scrollHeight);
+              
             }
           }
 

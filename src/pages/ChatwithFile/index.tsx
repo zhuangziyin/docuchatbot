@@ -47,6 +47,7 @@ const handleSend = function(){
         sendMsg(txt);
     }
 }
+
   const router = useRouter()
   const { t } = useTranslation('chat')
   const fontCls = router.locale === 'en-US' ? fonts.enRegular: fonts.cnRegular;
@@ -59,13 +60,16 @@ const handleSend = function(){
             <div className="flex flex-col py-20  mx-auto flex-1">
                     <MessageBox ref={messageBoxRef} messages={messages} localeStr={router.locale!} />
                 <div className='relative flex w-8/12 mx-auto shadow-lg border border-gray-200 rounded-md pl-4 py-4 bg-white'>
-                    <div className='overflow-y-auto w-full pr-10 scrollbar-thumb-gray-300 scrollbar-track-gray-100 scrollbar-thin scrollbar-thumb-rounded-md scrollbar-track-rounded-md'
-                      style={{maxHeight: 200, fontSize: 0}}>
+                    <div className='overflow-y-auto flex w-full pr-10 scrollbar-thumb-gray-300 scrollbar-track-gray-100 scrollbar-thin scrollbar-thumb-rounded-md scrollbar-track-rounded-md'
+                      style={{maxHeight: 200, fontSize: 0, flexDirection: 'column-reverse'}}>
+                        <div>
                     <AutoResizeTextArea ref={textAreaRef} className="text-sm m-0 resize-none w-full outline-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0"
                       initHeight={24} SendMessage={sendMsg}>
                     </AutoResizeTextArea>
                     <div className='absolute bottom-4 right-4 opacity-30 cursor-pointer' onClick={handleSend}>
                         <GrSend size={24}/>
+
+                    </div>
                     </div>
                     </div>
                     
