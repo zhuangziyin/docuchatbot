@@ -93,7 +93,7 @@ export default function Component(props:{localeStr: string}) {
         {
           isSucceeded && <div className="self-center relative -top-2 text-green-500 text-sm bg-green-500/20 px-2 py-2 border border-green-300 rounded-md w-fit flex items-center">
             <AiFillCheckCircle size={16} className="mr-2"/>
-            <span>{t("Dear") + usernameRef.current?.value + t("Welcome") + countdown + t("Seconds")}</span>
+            <span>{t("Dear") + usernameRef.current?.value + " " + t("Welcome") + countdown + t("Seconds")}</span>
             </div>
         }
       {isError && <div className="self-center relative -top-2 text-red-500 text-sm bg-red-500/20 px-2 py-2 border border-red-300 rounded-md w-fit flex items-center">

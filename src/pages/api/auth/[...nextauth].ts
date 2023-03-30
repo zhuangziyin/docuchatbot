@@ -14,7 +14,7 @@ export interface User{
 }
 
 export const readUsers = async ():Promise<User[]> => {
-  const path = "./users/users.json";
+  const path = "users/users.json";
   const fileContent = await FileOps.ReadFile(path);
   if(fileContent != null){
     const data = JSON.parse((fileContent as Buffer).toString('utf-8')) as User[];
@@ -24,7 +24,7 @@ export const readUsers = async ():Promise<User[]> => {
   
 };
 export const writerUser = async (users: User[]) => {
-  const path = "./users/users.json";
+  const path = "users/users.json";
   await FileOps.SaveFile(path, Buffer.from(JSON.stringify(users), 'utf8'));
   return;
 };
