@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.303.0",
     "@dalenguyen/openai": "^0.11.3",
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "@node-rs/jieba": "^1.6.2",
@@ -62,7 +63,6 @@
     "unified": "^10.1.2"
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.301.0",
     "@netlify/plugin-nextjs": "^4.33.0",
     "postcss": "^8.4.21",
     "tailwind-scrollbar": "^3.0.0"
