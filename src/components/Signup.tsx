@@ -32,6 +32,7 @@ export default function Component(props:{localeStr: string}) {
         startCountdown();
       }
     } catch (error) {
+      console.log(error);
       setIsError(true);
     }
   };
