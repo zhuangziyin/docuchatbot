@@ -187,19 +187,16 @@ export const GetOuterHtmlRootContent = async (
   return ele.children[0] as Element;
 };
 
-export const MarkdowntoReact = async (markdown: string): Promise<Root> => {
+export const MarkdowntoReact = async (markdown: string): Promise<string> => {
   //const content = await (await remark().use(html).process(markdown)).toString();
   const content = await unified()
     .use(remarkParse)
     .use(remarkGfm)
-    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(remarkRehype)
     .use(rehypeSanitize)
     .use(rehypeHighlight, { detect: true })
     .use(rehypeReact, { createElement, Fragment })
     .use(stringfy)
     .process(markdown);
-  const obj = (await unified()
-    .use(rehypeParse, { fragment: true })
-    .parse(content.value.toString())) as Root;
-  return obj as Root;
+  return content.value.toString();
 };

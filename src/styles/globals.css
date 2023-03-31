@@ -135,16 +135,13 @@ a {
 
 /* Apply scrollbar styles to code blocks */
 pre {
-  max-width: 600px;
+  max-width: 650px;
   margin: auto;
 }
 
-.userprompt pre{
-  font-size: 20px !important;
-  color: #374151 !important;
-  font-family: inherit !important;
-  max-width: none;
+.mychat pre code{
 
+  background-color: transparent !important;
 }
 
 .fade-out {

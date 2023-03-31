@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 import fonts from '@/styles/font.module.css'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import type { GetStaticProps, InferGetStaticPropsType } from 'next'
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Layout from '@/pages/Layout'
 import {GrSend} from 'react-icons/gr'
 import chatStyle from '@/styles/chat.module.css'
@@ -11,28 +11,38 @@ import MessageBox , {MessageBoxRef} from '@/components/ChatBox/ChatBox'
 import { ChatMessage  } from '@/components/ChatBox/ChatBox'
 import { useRef } from 'react'
 import FileSidebar from '@/components/Sidebar/FileSidebar'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { getSession , signIn, signOut } from 'next-auth/react'
+import { Session } from 'next-auth'
+import { User } from '@/utils/User'
 type Props = {
+  session: Session
   // Add custom props here
 }
-export const getStaticProps: GetStaticProps<Props> = async ({
+export const getServerSideProps : GetServerSideProps<Props> = async ({
   locale,
-}) => ({
-  props: {
-    ...(await serverSideTranslations(locale ?? 'en-US', [
-      'chat',
-    ])),
-  },
-})
+  req
+}) => {
+  const session = await getSession({ req });
 
-export default function Auth(_props: InferGetStaticPropsType<typeof getStaticProps>) {
-  const { data: session, status } = useSession({
-    required: true,
-    onUnauthenticated() {
-      signIn();
+  if (!session) {
+    return {
+      redirect: {
+        destination: `/${locale}/Auth?callbackUrl=${encodeURIComponent('/Chat')}`,
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      session,
+      ...(await serverSideTranslations(locale ?? 'en-US', ['chat'])),
     },
-    
-  });
+  };
+}
+
+
+export default function Auth(_props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const user = _props.session.user as User;
     const messageBoxRef = useRef<MessageBoxRef>(null);
     const textAreaRef = useRef<AutosizeRef>(null);
 const sendMsg = function(str: string){
@@ -56,7 +66,7 @@ const handleSend = function(){
   return (
     <Layout>
         <div className={chatStyle.aloneContainer}>
-            <FileSidebar localeStr={router.locale!} files={["ada.pdf", "rweaedasd.pdf", "ada0.pdf","ada1.pdf","ada2.pdf","ada3.pdf","ada4.pdf"]} userName={session?.user?.name?? ""} />
+            <FileSidebar localeStr={router.locale!} files={["ada.pdf", "rweaedasd.pdf", "ada0.pdf","ada1.pdf","ada2.pdf","ada3.pdf","ada4.pdf"]} userName={_props.session?.user?.name?? ""} />
             <div className="flex flex-col py-20  mx-auto flex-1">
                     <MessageBox ref={messageBoxRef} messages={messages} localeStr={router.locale!} />
                 <div className='relative flex w-8/12 mx-auto shadow-lg border border-gray-200 rounded-md pl-4 py-4 bg-white'>

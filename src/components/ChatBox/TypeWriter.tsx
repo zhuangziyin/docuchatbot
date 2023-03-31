@@ -17,15 +17,16 @@ function TypewriterEffect(props:{root: Root, idx: number, scroll: () => void, lo
     props.scroll();
   }
 
+
   //console.log(props.content);
   useEffect(() => {
     if(!(props.idx in isInitialized)){
         console.log("render");
-        StartTraverse(props.root, callBackStr, props.localeStr);
+        //StartTraverse(props.root, callBackStr, props.localeStr);
         isInitialized[props.idx] = false;
     }
     
-  }, []);
+  }, [props.idx]);
   return (
     <div style={{width: '100%'}} dangerouslySetInnerHTML={{__html : text}}  />
   );

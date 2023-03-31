@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router'
-import { useSession, signIn, signOut } from 'next-auth/react'
-import fonts from '@/styles/font.module.css'
-import { useTranslation } from 'next-i18next'
+import { getSession} from 'next-auth/react'
+import { useState } from 'react'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { GetServerSideProps, GetStaticProps, InferGetServerSidePropsType, InferGetStaticPropsType } from 'next'
 import Layout from '@/pages/Layout'
@@ -12,56 +11,49 @@ import MessageBox , {MessageBoxRef} from '@/components/ChatBox/ChatBox'
 import { ChatMessage  } from '@/components/ChatBox/ChatBox'
 import { useEffect, useRef } from 'react'
 import ChatSidebar from '@/components/Sidebar/ChatSidebar'
-import { useSocket } from '@/SocketContext'
+import { ChatCompletion } from '@/utils/Chat'
+import { User } from '@/utils/User'
+import ModelSelector, { LevelSelectorRef} from '@/components/ModelSelect'
 type Props = {
-  // Add custom props here
+  session: any;
 }
 export const getServerSideProps : GetServerSideProps<Props> = async ({
   locale,
-}) => ({
-  props: {
-    ...(await serverSideTranslations(locale ?? 'en-US', [
-      'chat',
-    ])),
-  },
-})
+  req
+}) => {
+  const session = await getSession({ req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: `/${locale}/Auth?callbackUrl=${encodeURIComponent('/Chat')}`,
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      session,
+      ...(await serverSideTranslations(locale ?? 'en-US', ['chat'])),
+    },
+  };
+}
 
 export default function Chat(_props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  
-  const { data: session, status } = useSession({
-    required: true,
-    onUnauthenticated() {
-      signIn();
-    },
-    
-  });
+  const user = _props.session.user as User;
+    const [superUser, setSuperUser] = useState(user.userLevel !== null && user.userLevel > 0);
     const messageBoxRef = useRef<MessageBoxRef>(null);
     const textAreaRef = useRef<AutosizeRef>(null);
-const sendMsg = async function(str: string){
-
-let curMsgs = JSON.parse(JSON.stringify(messageBoxRef?.current?.getMessage()));
+    const modelRef = useRef<LevelSelectorRef>(null);
+    const sendMsg = async function(str: string){
+  let curMsgs = JSON.parse(JSON.stringify(messageBoxRef?.current?.getMessage()));
   curMsgs.push({role: 'user', content: str});
-  messageBoxRef?.current?.addMessage({role: 'user', content: str}, true);
-const response = await fetch("/api/chat/completion", {
-  body:JSON.stringify(curMsgs),
-  method: 'POST'
-});
-if(response.ok){
-  const msg = await response.json();
-messageBoxRef?.current?.addMessage(msg, false);  
-}
-else{
-  messageBoxRef?.current?.setFailed();
-}
+  messageBoxRef?.current?.addMessage({role: 'user', content: str}, false);
+  messageBoxRef?.current?.addMessage({role: 'assistant', content: ""}, false);
+  console.log(modelRef.current?.GetModel());
+  await ChatCompletion(curMsgs, modelRef.current?.GetModel() ?? "gpt-3.5-turbo",  messageBoxRef?.current?.setHtml);
 
 }
-const { socket } = useSocket();
-useEffect(() => {
-  socket?.on("connect", () => {
-    socket.emit("testApi", "Test");
-  });
-  
-},[socket]);
 const handleSend = function(){
     var txt = textAreaRef?.current?.content();
     
@@ -75,7 +67,8 @@ const handleSend = function(){
     <Layout>
         <div className={chatStyle.aloneContainer}>
             <ChatSidebar  chats={[]} localeStr={router.locale!}/>
-            <div className="flex flex-col py-20  mx-auto flex-1">
+            <div className="flex flex-col py-12  mx-auto flex-1 relative">
+                <ModelSelector isSuper={superUser} ref={modelRef} />
                     <MessageBox ref={messageBoxRef} messages={messages} localeStr={router.locale!} />
                 <div className='relative flex w-8/12 mx-auto shadow-lg border border-gray-200 rounded-md pl-4 py-4 bg-white'>
                     <div className='flex overflow-y-auto w-full pr-10 scrollbar-thumb-gray-300 scrollbar-track-gray-100 scrollbar-thin scrollbar-thumb-rounded-md scrollbar-track-rounded-md'

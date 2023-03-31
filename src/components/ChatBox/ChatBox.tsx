@@ -1,5 +1,5 @@
 import React, { useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
-import ChatMessageUI from './ChatMessage';
+import ChatMessageUI, {ChatMessageRef} from './ChatMessage';
 import { useEffect } from 'react';
 import Image from 'next/image';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
@@ -22,6 +22,7 @@ export interface MessageBoxRef {
     getMessage:() => ChatMessage[]
     showWaiting: (show: boolean) => void;
     setFailed: () => void;
+    setHtml:(html: string) => void;
 }
 interface Props {
     condition: boolean;
@@ -43,6 +44,7 @@ const ChatBox = React.forwardRef<MessageBoxRef, MessageBoxProps>((props, ref) =>
     const [duringQuery, setDuringQuery] = useState(false);
     const [isError, setIsError] = useState(false);
     const [messages, setMessages]  = useState(props.messages);
+    const maxRef = useRef<ChatMessageRef | null>(null);
     const divRef = useRef<HTMLDivElement>(null);
     let previousHeight = 0;
     const {t} = useTranslation("chat");
@@ -51,7 +53,6 @@ const ChatBox = React.forwardRef<MessageBoxRef, MessageBoxProps>((props, ref) =>
             return;
         }
         if(divRef.current.scrollHeight > previousHeight) {
-          console.log(previousHeight);
             previousHeight = divRef.current.scrollHeight;
             divRef.current.scrollTo({top: divRef.current.scrollHeight, behavior:'smooth'});
         }
@@ -59,13 +60,12 @@ const ChatBox = React.forwardRef<MessageBoxRef, MessageBoxProps>((props, ref) =>
     }
     useEffect(() => {
         async function renderMessages() {
-          const promises = messages.map((message, idx) => ChatMessageUI({message: message, localeStr: props.localeStr, idx: idx, 
-            scroll: scrollToBottom}));
-          const rendered = await Promise.all(promises);
+          const rendered = messages.map((message, idx) => 
+          <ChatMessageUI key={idx.toString()} message={message} localeStr={props.localeStr} idx={idx} scroll={scrollToBottom} ref={idx === messages.length - 1 ? maxRef : null} />);
           setRenderedMessages(rendered);
         }
         renderMessages();
-      }, [messages]);
+      }, [messages, props.localeStr]);
     useEffect(()=>{
       scrollToBottom()
     },[renderedMessages])
@@ -84,6 +84,9 @@ const ChatBox = React.forwardRef<MessageBoxRef, MessageBoxProps>((props, ref) =>
         setFailed: ()=>{
           setDuringQuery(false);
           setIsError(true);
+        },
+        setHtml:(html: string)=>{
+          maxRef?.current?.setHtml(html);
         }
       }));
       return (

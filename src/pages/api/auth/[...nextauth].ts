@@ -1,18 +1,15 @@
-import NextAuth from "next-auth"
+import NextAuth, {DefaultSession} from "next-auth"
+import { JWT } from "next-auth/jwt";
 import CredentialsProvider from 'next-auth/providers/credentials';
 import crypto from 'crypto';
 import fs from 'fs';
 import FileOps from "@/pages/api/utils/FileOps"
 var path1 = require("path");
+import {User} from "@/utils/User"
 
-
-export interface User{
-  id: number;
-  name: string;
-  email: string;
-  password: string;
+export interface Session extends DefaultSession {
+  user?: User
 }
-
 export const readUsers = async ():Promise<User[]> => {
   const path = "users/users.json";
   const fileContent = await FileOps.ReadFile(path);
@@ -25,7 +22,7 @@ export const readUsers = async ():Promise<User[]> => {
 };
 export const writerUser = async (users: User[]) => {
   const path = "users/users.json";
-  await FileOps.SaveFile(path, Buffer.from(JSON.stringify(users), 'utf8'));
+  await FileOps.SaveFile(path, Buffer.from(JSON.stringify(users, null, "\t"), 'utf8'));
   return;
 };
 // import EmailProvider from "next-auth/providers/email"
@@ -46,13 +43,12 @@ export default NextAuth({
       {
         
         const users = await readUsers();
+        console.log(users);
         if(credentials!=undefined && credentials != null){
           if(credentials.username == undefined || credentials.username == null) return null;
           if(credentials.password == undefined || credentials.password == null) return null;
-          console.log(users);
           const user = users.filter(x=>x.email == credentials.username && x.password == credentials.password);
           if(user.length == 0) return null;
-          console.log(user);
           return user[0];
         }
         return null;
@@ -120,8 +116,17 @@ export default NextAuth({
   callbacks: {
     // async signIn({ user, account, profile, email, credentials }) { return true },
     // async redirect({ url, baseUrl }) { return baseUrl },
-    // async session({ session, token, user }) { return session },
-    // async jwt({ token, user, account, profile, isNewUser }) { return token }
+    async session({ session, token, user }) { 
+      session.user.userLevel = (token.user as User).userLevel;
+   return session;
+      
+    },
+    async jwt({ token, user, account, profile, isNewUser } ): Promise<JWT> {
+      if (user) {
+        token.user = user
+      }
+      return token
+    },
   },
 
   // Events are useful for logging

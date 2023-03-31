@@ -1,6 +1,7 @@
 import { cut } from "@node-rs/jieba";
 import { NextApiRequest, NextApiResponse } from 'next';
-import { User, readUsers, writerUser } from "./[...nextauth]"
+import { readUsers, writerUser } from "./[...nextauth]"
+import {User} from "@/utils/User"
 interface OneTimeAppend{
     value: string;
     wait: number;
