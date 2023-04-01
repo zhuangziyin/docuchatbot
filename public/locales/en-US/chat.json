@@ -5,6 +5,7 @@
     "UploadFile": "Upload file",
     "FileSelected": "Selected files",
     "WorkSpace": "'s workspace",
-    "GenerateHint": "Generating answer"
+    "GenerateHint": "Generating answer",
+    "ChatErrHint":"Somthing went wrong, please refresh and try again."
 
 }

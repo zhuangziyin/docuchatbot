@@ -1,12 +1,29 @@
-import NextAuth from "next-auth"
+import {
+  Session as NextAuthSession,
+  User as NextAuthUser,
+  Profile as NextAuthProfile,
+} from "next-auth";
 
+// Define your custom User type
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  userLevel: number | null;
+}
+
+// Extend NextAuth types to use your custom User type
 declare module "next-auth" {
-  /**
-   * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-   */
-  interface Session {
-    user: {
-      userLevel: number | null
-    }& DefaultSession["user"]
+  export interface Session extends NextAuthSession {
+    user?: User;
+  }
+
+  export interface User extends NextAuthUser {
+    userLevel?: number;
+  }
+
+  export interface Profile extends NextAuthProfile {
+    userLevel?: number;
   }
 }

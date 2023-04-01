@@ -1,59 +1,58 @@
-import NextAuth, {DefaultSession} from "next-auth"
+import NextAuth, { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
-import CredentialsProvider from 'next-auth/providers/credentials';
-import crypto from 'crypto';
-import fs from 'fs';
-import FileOps from "@/pages/api/utils/FileOps"
-var path1 = require("path");
-import {User} from "@/utils/User"
+import CredentialsProvider from "next-auth/providers/credentials";
+import FileOps from "@/pages/api/utils/FileOps";
+import { User } from "@/utils/User";
+import { Session } from "next-auth";
 
-export interface Session extends DefaultSession {
-  user?: User
-}
-export const readUsers = async ():Promise<User[]> => {
+export const readUsers = async (): Promise<User[]> => {
   const path = "users/users.json";
   const fileContent = await FileOps.ReadFile(path);
-  if(fileContent != null){
-    const data = JSON.parse((fileContent as Buffer).toString('utf-8')) as User[];
+  if (fileContent != null) {
+    const data = JSON.parse(
+      (fileContent as Buffer).toString("utf-8")
+    ) as User[];
     return data;
-  }
-  else return [];
-  
+  } else return [];
 };
 export const writerUser = async (users: User[]) => {
   const path = "users/users.json";
-  await FileOps.SaveFile(path, Buffer.from(JSON.stringify(users, null, "\t"), 'utf8'));
+  await FileOps.SaveFile(
+    path,
+    Buffer.from(JSON.stringify(users, null, "\t"), "utf8")
+  );
   return;
 };
 // import EmailProvider from "next-auth/providers/email"
 // import AppleProvider from "next-auth/providers/apple"
-
-// For more information on each option (and a full list of options) go to
-// https://next-auth.js.org/configuration/options
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   // https://next-auth.js.org/configuration/providers
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
-      credentials:{
-        username: { label: 'Username', type: 'text' },
-        password: { label: 'Password', type: 'password' }
+      name: "Credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) : Promise<any>
-      {
-        
+      async authorize(credentials): Promise<any> {
         const users = await readUsers();
         console.log(users);
-        if(credentials!=undefined && credentials != null){
-          if(credentials.username == undefined || credentials.username == null) return null;
-          if(credentials.password == undefined || credentials.password == null) return null;
-          const user = users.filter(x=>x.email == credentials.username && x.password == credentials.password);
-          if(user.length == 0) return null;
+        if (credentials != undefined && credentials != null) {
+          if (credentials.username == undefined || credentials.username == null)
+            return null;
+          if (credentials.password == undefined || credentials.password == null)
+            return null;
+          const user = users.filter(
+            (x) =>
+              x.email == credentials.username &&
+              x.password == credentials.password
+          );
+          if (user.length == 0) return null;
           return user[0];
         }
         return null;
-      }
-    })
+      },
+    }),
   ],
   // Database optional. MySQL, Maria DB, Postgres and MongoDB are supported.
   // https://next-auth.js.org/configuration/databases
@@ -66,13 +65,13 @@ export default NextAuth({
   // The secret should be set to a reasonably long random string.
   // It is used to sign cookies and to sign and encrypt JSON Web Tokens, unless
   // a separate secret is defined explicitly for encrypting the JWT.
-  secret: process.env.SECRET,
+  //secret: process.env.SECRET,
 
   session: {
     // Use JSON Web Tokens for session instead of database sessions.
     // This option can be used with or without a database for users/accounts.
     // Note: `strategy` should be set to 'jwt' if no database is used.
-    strategy: 'jwt',
+    strategy: "jwt",
 
     // Seconds - How long until an idle session expires and is no longer valid.
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -88,7 +87,7 @@ export default NextAuth({
   // https://next-auth.js.org/configuration/options#jwt
   jwt: {
     // A secret to use for key generation (you should set this explicitly)
-    secret: process.env.SECRET,
+    // secret: process.env.NEXTAUTH_SECRET,
     // Set to true to use encryption (default: false)
     // encryption: true,
     // You can define your own encode/decode functions for signing and encryption
@@ -103,8 +102,8 @@ export default NextAuth({
   // pages is not specified for that route.
   // https://next-auth.js.org/configuration/pages
   pages: {
-    signIn: '/Auth',  // Displays signin buttons
-    signOut: '/', // Displays form with sign out button
+    signIn: "/Auth", // Displays signin buttons
+    signOut: "/", // Displays form with sign out button
     // error: '/auth/error', // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // Used for check email page
     // newUser: null // If set, new users will be directed here on first sign in
@@ -116,16 +115,22 @@ export default NextAuth({
   callbacks: {
     // async signIn({ user, account, profile, email, credentials }) { return true },
     // async redirect({ url, baseUrl }) { return baseUrl },
-    async session({ session, token, user }) { 
-      session.user.userLevel = (token.user as User).userLevel;
-   return session;
-      
+    async session({ session, token, user }) {
+      try {
+        if (session.user) {
+          console.log("user" + user);
+          console.log("sessionuser" + session.user);
+          session.user.userLevel = (token.user as User).userLevel ?? 0;
+        }
+      } catch (err) {}
+
+      return session;
     },
-    async jwt({ token, user, account, profile, isNewUser } ): Promise<JWT> {
+    async jwt({ token, user, account, profile, isNewUser }): Promise<JWT> {
       if (user) {
-        token.user = user
+        token.user = user;
       }
-      return token
+      return token;
     },
   },
 
@@ -135,4 +140,7 @@ export default NextAuth({
 
   // Enable debug messages in the console if you are having problems
   debug: true,
-})
+};
+// For more information on each option (and a full list of options) go to
+// https://next-auth.js.org/configuration/options
+export default NextAuth(authOptions);

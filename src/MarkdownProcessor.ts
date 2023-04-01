@@ -11,7 +11,8 @@ import { Root, Text, Element, RootContent } from "hast";
 import remarkGfm from "remark-gfm";
 import { io } from "socket.io-client";
 import { Socket } from "socket.io";
-
+import { visit } from "unist-util-visit";
+import { Parent } from "unist";
 interface Ref<T> {
   value: T;
 }
@@ -25,65 +26,76 @@ interface Node {
   value?: string;
 }
 
-export interface OneTimeAppend{
+export interface OneTimeAppend {
   value: string;
   wait: number;
-
 }
-export const split = (text:string) : OneTimeAppend[] =>{
+export const split = (text: string): OneTimeAppend[] => {
   var finalList = [];
   var wordList = text.split(/(\s+)/);
-  for(var i in wordList){
-  if(wordList[i].length > 4){
-    var tmpIdx = 0;
-    while(tmpIdx < wordList[i].length){
-      finalList.push({value: wordList[i].substring(tmpIdx, Math.min(tmpIdx + 2, wordList[i].length)), wait: 120});
-      tmpIdx += 2;
+  for (var i in wordList) {
+    if (wordList[i].length > 4) {
+      var tmpIdx = 0;
+      while (tmpIdx < wordList[i].length) {
+        finalList.push({
+          value: wordList[i].substring(
+            tmpIdx,
+            Math.min(tmpIdx + 2, wordList[i].length)
+          ),
+          wait: 120,
+        });
+        tmpIdx += 2;
+      }
+    } else {
+      finalList.push({ value: wordList[i], wait: 200 });
     }
-    
   }
-  else{
-    finalList.push({value: (wordList[i]), wait: 200});
-  }
-}
-return finalList;
-}
-async function segmentText(text: string, socket: Socket) : Promise<OneTimeAppend[]> {
-  if(text !== "" && text !== undefined && text !== null){
-    const response1 : OneTimeAppend[] = await new Promise((resolve) => {
-      socket.emit('split', text, (response : OneTimeAppend[]) => {
+  return finalList;
+};
+async function segmentText(
+  text: string,
+  socket: Socket
+): Promise<OneTimeAppend[]> {
+  if (text !== "" && text !== undefined && text !== null) {
+    const response1: OneTimeAppend[] = await new Promise((resolve) => {
+      socket.emit("split", text, (response: OneTimeAppend[]) => {
         resolve(response);
       });
     });
     return response1;
   }
   return [];
-  
 }
 
-async function splitShowContent(text: string, localeStr: string, socket: Socket) : Promise<OneTimeAppend[]> {
+async function splitShowContent(
+  text: string,
+  localeStr: string,
+  socket: Socket
+): Promise<OneTimeAppend[]> {
   var finalList: OneTimeAppend[] = [];
-  if(localeStr == "en-US"){
+  if (localeStr == "en-US") {
     var wordList = text.split(/(?=d)/g);
-    
-    for(var i in wordList){
-    if(wordList[i].length > 4){
-      var tmpIdx = 0;
-      while(tmpIdx < wordList[i].length){
-        finalList.push({value: wordList[i].substring(tmpIdx, Math.min(tmpIdx + 2, wordList[i].length)), wait: 40});
-        tmpIdx += 2;
+
+    for (var i in wordList) {
+      if (wordList[i].length > 4) {
+        var tmpIdx = 0;
+        while (tmpIdx < wordList[i].length) {
+          finalList.push({
+            value: wordList[i].substring(
+              tmpIdx,
+              Math.min(tmpIdx + 2, wordList[i].length)
+            ),
+            wait: 40,
+          });
+          tmpIdx += 2;
+        }
+      } else if (wordList[i] == " ") {
+        finalList.push({ value: wordList[i], wait: 200 });
+      } else {
+        finalList.push({ value: wordList[i], wait: 200 });
       }
-      
     }
-    else if(wordList[i] == " "){
-      finalList.push({value: (wordList[i]), wait: 200});
-    }
-    else{
-      finalList.push({value: (wordList[i]), wait: 200});
-    }
-  }
-}
-  else{
+  } else {
     finalList = await segmentText(text, socket);
     // const wordList = cutAll(text);
     // for(var i in wordList){
@@ -93,16 +105,14 @@ async function splitShowContent(text: string, localeStr: string, socket: Socket)
     //       finalList.push({value: wordList[i].substring(tmpIdx, Math.min(tmpIdx + 2, wordList[i].length)), wait: 40});
     //       tmpIdx += 2;
     //     }
-        
+
     //   }
     //   else{
     //     finalList.push({value: (wordList[i]), wait: 150});
     //   }
     // }
-
   }
   return finalList;
-  
 }
 
 function sleep(ms: number): Promise<void> {
@@ -120,36 +130,39 @@ export function getOuterHtml(root: RootContent): string {
 }
 export async function StartTraverse(
   root: Root,
-  appenFunc: (str: string) => void, localeStr: string
+  appenFunc: (str: string) => void,
+  localeStr: string
 ) {
-
-  const socket = io("/", { path: "/api/socket"});
-  socket.on("connect", async () => {  
-    console.log("connected");
+  const socket = io("/", { path: "/api/socket" });
+  socket.on("connect", async () => {
     var curRoot: Root = { type: "root", children: [] };
-  async function printRoot() {
-    var contentStr = await unified()
-      .use(rehypeParse)
-      .use(stringfy)
-      .stringify(curRoot);
-    appenFunc(contentStr);
-  }
-  for (const child of root.children) {
-    await traverse(child, curRoot, GetOuterHtmlRootContent, printRoot, localeStr, socket);
-  }
-
+    async function printRoot() {
+      var contentStr = await unified()
+        .use(rehypeParse)
+        .use(stringfy)
+        .stringify(curRoot);
+      appenFunc(contentStr);
+    }
+    for (const child of root.children) {
+      await traverse(
+        child,
+        curRoot,
+        GetOuterHtmlRootContent,
+        printRoot,
+        localeStr,
+        socket
+      );
+    }
   });
-  
 }
-
-
 
 async function traverse(
   node: RootContent,
   fatherNode: Element | Root,
   callback: (node: Element) => Promise<Element>,
   printRoot: () => Promise<void>,
-  localeStr: string, socket: Socket | any
+  localeStr: string,
+  socket: Socket | any
 ): Promise<Element | null> {
   if (node.type == "element") {
     const curRoot = await callback(node as Element);
@@ -166,8 +179,7 @@ async function traverse(
     textNode.value = "";
     fatherNode.children.push(textNode);
     var finalList = await splitShowContent(text, localeStr, socket);
-    console.log(finalList);
-    for(var i in finalList){
+    for (var i in finalList) {
       (fatherNode.children[curIdx] as Text).value += finalList[i].value;
       await printRoot();
       //console.log(finalList[i].value);
@@ -186,7 +198,31 @@ export const GetOuterHtmlRootContent = async (
     .parse(outerHtml);
   return ele.children[0] as Element;
 };
+interface TextNode extends Text {
+  className?: string;
+}
 
+interface ParentNode extends Parent {
+  children: (TextNode | ParentNode)[];
+}
+
+function modifyLastTextNode(content: string): string {
+  const ast = unified().use(rehypeParse, { fragment: true }).parse(content);
+
+  let lastTextNode: Node | null = null;
+  visit(ast, (node: Node, index: number | null, parent: Node | null) => {
+    if (node.type === "text") {
+      lastTextNode = parent;
+    }
+  });
+  if (lastTextNode) {
+    (lastTextNode as Node).properties = {
+      className: [],
+    };
+    (lastTextNode as Node).properties?.className?.push("cursor-div");
+  }
+  return unified().use(stringfy).stringify(ast);
+}
 export const MarkdowntoReact = async (markdown: string): Promise<string> => {
   //const content = await (await remark().use(html).process(markdown)).toString();
   const content = await unified()
@@ -198,5 +234,6 @@ export const MarkdowntoReact = async (markdown: string): Promise<string> => {
     .use(rehypeReact, { createElement, Fragment })
     .use(stringfy)
     .process(markdown);
-  return content.value.toString();
+
+  return modifyLastTextNode(content.value.toString());
 };
